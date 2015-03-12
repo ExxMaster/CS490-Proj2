@@ -12,8 +12,24 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   InetAddress address;
   MulticastSocket socket;
   int channel = 2222;
+  @Override
+     public void rbroadcast(Message m){
+      int i = 0;
+    }
+  @Override 
+  public void removeMember(Process member){
+    ;
+  }
+  @Override 
+  public void addMember(Process member){
+    ;
+  }
+  @Override 
+   public void init(Process currentProcess , BroadcastReceiver br){
+    ;
+  }
   
-  public ReliableBroadcast(String procName, String groupAddress)
+ /* public ReliableBroadcast(String procName, String groupAddress)
   {
     name = procName;
       try
@@ -30,8 +46,14 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   public ReliableBroadcast(String procName)
    {
       this(procName, "127.0.0.1");
+   }*/
+  
+  public ReliableBroadcast(Process p)
+   {
+      //this(procName, "127.0.0.1");
    }
- 
+  
+ /*
   public static void main(String [] args)
   {
     if (args.length < 1)
@@ -41,7 +63,8 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
     }
     ReliableBroadcast rb = new ReliableBroadcast(args[0]);
     //rb.start();
-  } 
+  }
+  */
 }
 
 

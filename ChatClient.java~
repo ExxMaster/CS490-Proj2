@@ -4,30 +4,8 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ChatClient implements Runnable, BroadcastReceiver, Message{
+class ChatClient implements Runnable{
      
-  @Override
-  public void receive(Message m){
-    ;
-  }
-  @Override
-  public int getMessageNumber(){
-    int i = 0;
-    return i;
-  }
-  @Override
-  public void setMessageNumber(int messageNumber){
-    
-  }
-  @Override
-  public String getMessageContents(){
-    String j = "";
-    return j;
-  }
-  @Override
-  public void setMessageContents(String contents){
-    
-  }
     private String _name, _ip;
     private int _port;
     ArrayList<String> group = null;
@@ -45,18 +23,17 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
     //IO buffer
     BufferedWriter bw;
     BufferedReader br;
-    static Process p;
      
     //constant variable
     private static final int heartbeat_rate = 5;
     private static final String serverAddress = "localhost";
-    private static int portNumber = 1222;      //this gets reset to what the user inputs
+    private static int portNumber = 1222;
     private static final int THREAD_POOL_CAPACITY = 10;
      
     public ChatClient() {
+         
         try{
             s = new Socket(serverAddress, portNumber);
-            p = new Process();
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverSocket = new ServerSocket(0);
@@ -89,10 +66,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
          
         String m = "register<" + this._name + ", " + this._ip + ", " +  this._port + ">" + "\n";
         //System.out.println(m);
-        //System.out.println(this._ip + this._port + this._name);
-
-        p.Node(this._ip, this._port, this._name); //make the client a process node
-        
+         
         this.sendMessage(m);
         //System.out.println("Message sent to the server : " + m);
          
@@ -343,12 +317,12 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
      
     public static void main(String[] args) throws Exception {
         if(args.length!=1){
-     System.out.println("Need port number");
-     System.exit(1);
- }
- portNumber=Integer.parseInt(args[0]);
+	    System.out.println("Need port number");
+	    System.exit(1);
+	}
+	portNumber=Integer.parseInt(args[0]);
 
- ChatClient cc = new ChatClient();
+	ChatClient cc = new ChatClient();
          
         while(true) {
             if(cc.register()) break;
@@ -356,8 +330,5 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
          
         cc.sendHeartbeat();
         cc.prompt();
-        
-        ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
-        
     }
 }
