@@ -6,6 +6,11 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ReliableBroadcast implements ReliableBroadcastInterface{
   String name;
@@ -16,9 +21,22 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   public static ArrayList<Process> p_group;
   
   @Override
-     public void rbroadcast(Message m){
-    System.out.println("Successs with extention");
-    }
+  public void rbroadcast(Message m){
+    for(int i = 0; i<p_group.size(); i++)
+        {
+          Process temp = p_group.get(i);
+          String ip = temp.getIP();
+          int port = temp.getPort();//.toString();
+          try{
+            Socket socket = new Socket(ip, port);
+            BufferedWriter bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+          }
+          catch(IOException e){
+            ;
+          }
+
+        }
+  }
   @Override 
   public void removeMember(Process member){
     p_group.remove(member);

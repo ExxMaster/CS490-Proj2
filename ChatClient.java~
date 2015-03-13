@@ -58,7 +58,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
         try{
             s = new Socket(serverAddress, portNumber);
             p = new Process();
-
+            rb = new ReliableBroadcast();
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverSocket = new ServerSocket(0);
@@ -189,13 +189,18 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
         Scanner sc = new Scanner(System.in);
         while(true) {
             try {
+                //this.listen();
                 System.out.print("> ");
                 String command = sc.nextLine();
+                
                 if(command.equals("exit")) {
                     sc.close();
                     System.exit(1);
                 } else if(command.equals("get")) {
                     this.group = this.get();
+                } 
+                else if(command.equals("getp")) {
+                    this.getProcess();
                 } else if(command.contains("chat")) {
                     this.Chat(command);
                 } else if(command.equals("y")) {
@@ -206,7 +211,8 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
                     bw.write("Declined\n");
                     bw.flush();
                 } else {
-                    System.out.println("Command not found");
+                  //this.broadCast(command);
+                  System.out.println("Command not found"+command);
                 }
             } catch(Exception e) {
                 e.printStackTrace();
@@ -216,7 +222,16 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
         }
     }
     
-    
+    @SuppressWarnings("resource")
+    private void broadCast(String s) throws IOException{
+      try{
+        System.out.println("\t\t\t This is the prcess list size = " + rb.p_group.size());
+      }
+      catch(NullPointerException e)
+      {
+        System.out.println("SHIT dint WORK");
+      }
+    }
     
     //chat from here
     @SuppressWarnings("resource")
@@ -346,6 +361,21 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
             ObjectInputStream ois = new ObjectInputStream(this.s.getInputStream());
             ret = (ArrayList<String>) ois.readObject();
             System.out.println(ret.toString());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ArrayList<Process> getProcess() {
+        ArrayList<Process> ret = null;
+        try {
+            String m = "getp\n";
+            this.sendMessage(m);
+            ObjectInputStream ois = new ObjectInputStream(this.s.getInputStream());
+            ret = (ArrayList<Process>) ois.readObject();
+            //System.out.println(ret.toString());
         } catch(Exception e) {
             e.printStackTrace();
         }

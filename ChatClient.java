@@ -4,33 +4,17 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceiver, Message{
+class ChatClient implements Runnable, BroadcastReceiver{
      
   @Override
   public void receive(Message m){
     ;
   }
-  @Override
-  public int getMessageNumber(){
-    int i = 0;
-    return i;
-  }
-  @Override
-  public void setMessageNumber(int messageNumber){
-    
-  }
-  @Override
-  public String getMessageContents(){
-    String j = "";
-    return j;
-  }
-  @Override
-  public void setMessageContents(String contents){
-    
-  }
+  
     private String _name, _ip;
     private int _port;
     ArrayList<String> group = null;
+    public static ArrayList<Process> p_client_group = null;
     
     //Connection to server
     private Socket s;
@@ -63,7 +47,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverSocket = new ServerSocket(0);
         }catch (IOException e) {
-            System.out.println("Cannection to server failed");
+            System.out.println("Connextion to server failed");
             System.exit(1);
         }
          
@@ -196,11 +180,12 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
                 if(command.equals("exit")) {
                     sc.close();
                     System.exit(1);
-                } else if(command.equals("get")) {
+                } 
+                else if(command.equals("get")) {
                     this.group = this.get();
                 } 
                 else if(command.equals("getp")) {
-                    this.getProcess();
+                    this.p_client_group = this.getProcess();
                 } else if(command.contains("chat")) {
                     this.Chat(command);
                 } else if(command.equals("y")) {
@@ -210,9 +195,16 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
                     bw = new BufferedWriter(new OutputStreamWriter(this._client.getOutputStream()));
                     bw.write("Declined\n");
                     bw.flush();
-                } else {
-                  //this.broadCast(command);
-                  System.out.println("Command not found"+command);
+                } 
+                
+                else {
+                  System.out.println("Calling BroadCast");
+                  this.p_client_group = this.getProcess();
+                  this.broadCast(this.p_client_group);
+                  /*Message m = new Message();
+                  m.Message(command, 1);
+                  //m.setMessageContents(command);
+                  rb.rbroadcast(m);*/
                 }
             } catch(Exception e) {
                 e.printStackTrace();
@@ -223,9 +215,21 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
     }
     
     @SuppressWarnings("resource")
-    private void broadCast(String s) throws IOException{
+    private void broadCast(ArrayList<Process> p_group) throws IOException{
       try{
-        System.out.println("\t\t\t This is the prcess list size = " + rb.p_group.size());
+        for(int i = 0; i<p_group.size(); i++)
+        {
+          Process temp = p_group.get(i);
+          String ip = temp.getIP();
+          String port = Integer.toString(temp.getPort());//.toString();
+          String chat = "chat ";
+          String send = chat.concat(ip).concat(" ").concat(port);
+          this.Chat(send);
+          //this.AcceptChat();
+          //this.listen();
+        }
+        
+        
       }
       catch(NullPointerException e)
       {
@@ -239,17 +243,8 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
      String [] tok = s.split(" ");
      Socket socket = new Socket(tok[1], Integer.parseInt(tok[2]));
      BufferedWriter bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-     
-     //String [] tok = s.split(" ");
 
-     //for(int i = 0; i < rb.p_group.size(); i++)
-    // {
-       //Process temp = new Process();
-       //temp = rb.p_group.get(i);
-       //socket = new Socket(temp.getIP(), temp.getPort());
-       //bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-    // }
-     //new thread to keep receiving message
+//new thread to keep receiving message
      this.executor.execute(new Runnable() {
 
       Socket s;
@@ -269,7 +264,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
        return;
       }
       System.out.println(s);
-      System.out.print("> ");
+      System.out.print(">> ");
      }
     } catch (IOException e) {
      e.printStackTrace();
@@ -285,7 +280,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
      
      Scanner sc = new Scanner(System.in);
         while(true) {
-         System.out.print("> ");
+         System.out.print(">> ");
          String st = sc.nextLine();
          if(st.equals("exit")) {
           bbw.write("EndSession\n");
@@ -323,7 +318,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
        return;
       }
       System.out.println(s);
-      System.out.print("> ");
+      System.out.print(">> ");
      } catch(Exception e) {
       e.printStackTrace();
      }
@@ -338,7 +333,7 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
         }.init(br));
         Scanner sc = new Scanner(System.in);
         while(true) {
-         System.out.print("> ");
+         System.out.print(">> ");
          String s = sc.nextLine();
          if(s.equals("exit")) {
           bw.write("EndSession\n");
@@ -396,9 +391,5 @@ class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceive
          
         cc.sendHeartbeat();
         cc.prompt();
-
-        
-        //ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
-        
     }
 }

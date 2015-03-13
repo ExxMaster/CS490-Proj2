@@ -1,6 +1,18 @@
-public interface Message {
- int getMessageNumber();
- void setMessageNumber(int messageNumber);
- String getMessageContents();
- void setMessageContents(String contents);
+import java.io.Serializable;
+public class Message implements Serializable  {
+ String text;
+ int id;
+
+ public void Message(String text , int id) {
+  this.id = id ;
+  this.text = text ;
+ }
+ 
+ public String getText() {
+  return text ;
+ }
+ public int getID() {
+  return id ;
+ }
+ 
 }
