@@ -357,7 +357,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         cc.sendHeartbeat();
         cc.prompt();
         
-        ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
+        //ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
         
     }
 }

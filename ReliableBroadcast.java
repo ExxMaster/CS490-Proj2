@@ -12,59 +12,40 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   InetAddress address;
   MulticastSocket socket;
   int channel = 2222;
+  Process local;
+  public static ArrayList<Process> p_group;
+  
   @Override
      public void rbroadcast(Message m){
-      int i = 0;
+    System.out.println("Successs with extention");
     }
   @Override 
   public void removeMember(Process member){
-    ;
+    p_group.remove(member);
   }
   @Override 
   public void addMember(Process member){
-    ;
+    p_group.add(member);
   }
   @Override 
    public void init(Process currentProcess , BroadcastReceiver br){
     ;
   }
   
- /* public ReliableBroadcast(String procName, String groupAddress)
-  {
-    name = procName;
-      try
-      {
-         socket = new MulticastSocket(channel);
-         address = InetAddress.getByName(groupAddress);
-         socket.joinGroup(address);
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
+  public void printGroup(){
+    System.out.println("FOUND THIS SHIT RIGHT HERE \t\t" + p_group.size() + ","); 
+    for(int i = 0; i < ReliableBroadcast.p_group.size(); i++)
+        {
+          Process temp = ReliableBroadcast.p_group.get(i);
+          String id = temp.getID();
+          System.out.println("FOUND THIS SHIT RIGHT HERE \t\t" + id + ","); 
+        }
   }
-  public ReliableBroadcast(String procName)
-   {
-      this(procName, "127.0.0.1");
-   }*/
   
-  public ReliableBroadcast(Process p)
-   {
-      //this(procName, "127.0.0.1");
-   }
-  
- /*
-  public static void main(String [] args)
+  public ReliableBroadcast()
   {
-    if (args.length < 1)
-    {
-      System.out.println("Need to be in this format: java ReliableBroadcast \"your name\"");
-      System.exit(0);
-    }
-    ReliableBroadcast rb = new ReliableBroadcast(args[0]);
-    //rb.start();
+     
   }
-  */
 }
 
 
