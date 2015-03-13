@@ -167,7 +167,12 @@ public class MultithreadedChatServer extends ReliableBroadcast implements Runnab
                     ObjectOutputStream oos = new ObjectOutputStream(this._client.getOutputStream());
                     oos.writeObject(MultithreadedChatServer.group);
                     oos.flush();
-                } else if(m.contains("heartbeat")) {
+                } else if(m.equals("getp")){
+                  ObjectOutputStream oos = new ObjectOutputStream(this._client.getOutputStream());
+                    oos.writeObject(MultithreadedChatServer.rb.p_group);
+                    oos.flush();
+                }           
+                else if(m.contains("heartbeat")) {
                  Long l = System.currentTimeMillis();
                  m = m.substring(m.indexOf('<'));
                     if(MultithreadedChatServer.heart_beat.put(m, l) == null) {

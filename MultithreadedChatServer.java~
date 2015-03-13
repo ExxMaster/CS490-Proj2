@@ -12,11 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class MultithreadedChatServer implements Runnable {
+public class MultithreadedChatServer extends ReliableBroadcast implements Runnable {
     
     //Constant Variable
     private static int PORT = 1222;
     private static final int THREAD_POOL_CAPACITY = 10;
+    public static ReliableBroadcast rb;
     
     private ServerSocket serverSocket;
     private static ArrayList<String> group;
@@ -27,9 +28,9 @@ public class MultithreadedChatServer implements Runnable {
     private Socket _client;
     BufferedWriter bw;
     private String name;
+    static Message m;
     
-    public MultithreadedChatServer() {
-        
+    public MultithreadedChatServer() {        
         this.executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(THREAD_POOL_CAPACITY);
         
         //create the server socket
@@ -40,6 +41,9 @@ public class MultithreadedChatServer implements Runnable {
         }
         group = new ArrayList<String>();
         heart_beat = new ConcurrentHashMap<String, Long>();
+        //System.out.println("\t\t\t\tObject of RB created ");
+        rb = new ReliableBroadcast();
+        rb.p_group = new ArrayList<Process>();
     }
     
     public MultithreadedChatServer(Socket client) {
@@ -54,7 +58,16 @@ public class MultithreadedChatServer implements Runnable {
     private synchronized boolean addToGroup(String s) {
         String [] sa = s.split(",");
         sa[0] = sa[0].substring(1);
-        System.out.println(sa[0]);
+        sa[1] = sa[1].substring(1);
+        sa[2] = sa[2].substring(1, sa[2].length()-1);
+        int port =  Integer.parseInt(sa[2]);
+        //System.out.println(sa[0]);
+        //System.out.println(sa[1]);
+        //System.out.println(sa[2]);
+        
+        Process member = new Process();
+        member.Node(sa[1], port, sa[0]);
+        
         for(int i = 0; i < MultithreadedChatServer.group.size(); i++) {
             if(MultithreadedChatServer.group.get(i).contains(sa[0])) {
                 try {             
@@ -67,6 +80,9 @@ public class MultithreadedChatServer implements Runnable {
             }
         }
         MultithreadedChatServer.group.add(s);
+        rb.addMember(member);
+        rb.printGroup();
+        
         
         try {            
             bw.write("Success\n");
@@ -80,7 +96,27 @@ public class MultithreadedChatServer implements Runnable {
     }
     
     private synchronized static boolean removeFromGroup(String s) {
-        return MultithreadedChatServer.group.remove(s);
+      if(MultithreadedChatServer.group.remove(s)){
+        String [] sa = s.split(",");
+        sa[0] = sa[0].substring(1);
+        for(int i = 0; i < rb.p_group.size(); i++)
+        {
+          Process temp = rb.p_group.get(i);
+          String id = temp.getID();
+          if(id.equals(sa[0])){
+            if(rb.p_group.remove(temp)){
+              System.out.println("\t\t\tDONE REMOVING FROM PROCESS LIST");
+            }
+            else
+            {
+              System.out.println("ERROR: REMOVING PROCESS DID NOT WORK");
+            }
+          }
+        }
+        return true;
+      }
+      return false;
+        
     }
     
     
@@ -138,6 +174,7 @@ public class MultithreadedChatServer implements Runnable {
                      System.out.println("updating failed");
                     }
                     System.out.printf("update time to %s\n", l.toString());
+                            rb.printGroup();
                 }
             }
         } catch (Exception e) {
@@ -148,6 +185,7 @@ public class MultithreadedChatServer implements Runnable {
     
     public void startServer() {
      this.checkingHeartbeat();
+
         while (true) {
             try {
                 Socket _client = this.serverSocket.accept();
@@ -160,6 +198,7 @@ public class MultithreadedChatServer implements Runnable {
     }
     
     public static void main(String[] args) {
+
         if(args.length != 1){
             System.err.println("need port number");
             System.exit(1);

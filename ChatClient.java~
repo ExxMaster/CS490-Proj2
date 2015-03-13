@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ChatClient implements Runnable, BroadcastReceiver, Message{
+class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceiver, Message{
      
   @Override
   public void receive(Message m){
@@ -46,6 +46,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
     BufferedWriter bw;
     BufferedReader br;
     static Process p;
+    public static ReliableBroadcast rb;
      
     //constant variable
     private static final int heartbeat_rate = 5;
@@ -57,6 +58,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         try{
             s = new Socket(serverAddress, portNumber);
             p = new Process();
+
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverSocket = new ServerSocket(0);
@@ -91,7 +93,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         //System.out.println(m);
         //System.out.println(this._ip + this._port + this._name);
 
-        p.Node(this._ip, this._port, this._name); //make the client a process node
+        //p.Node(this._ip, this._port, this._name); //make the client a process node
         
         this.sendMessage(m);
         //System.out.println("Message sent to the server : " + m);
@@ -223,6 +225,15 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
      Socket socket = new Socket(tok[1], Integer.parseInt(tok[2]));
      BufferedWriter bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
      
+     //String [] tok = s.split(" ");
+
+     //for(int i = 0; i < rb.p_group.size(); i++)
+    // {
+       //Process temp = new Process();
+       //temp = rb.p_group.get(i);
+       //socket = new Socket(temp.getIP(), temp.getPort());
+       //bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    // }
      //new thread to keep receiving message
      this.executor.execute(new Runnable() {
 
@@ -349,15 +360,15 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
  portNumber=Integer.parseInt(args[0]);
 
  ChatClient cc = new ChatClient();
-         
         while(true) {
             if(cc.register()) break;
         }
          
         cc.sendHeartbeat();
         cc.prompt();
+
         
-        ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
+        //ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
         
     }
 }

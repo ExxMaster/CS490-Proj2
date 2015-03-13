@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ChatClient implements Runnable, BroadcastReceiver, Message{
+class ChatClient extends ReliableBroadcast implements Runnable, BroadcastReceiver, Message{
      
   @Override
   public void receive(Message m){
@@ -46,6 +46,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
     BufferedWriter bw;
     BufferedReader br;
     static Process p;
+    public static ReliableBroadcast rb;
      
     //constant variable
     private static final int heartbeat_rate = 5;
@@ -57,6 +58,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         try{
             s = new Socket(serverAddress, portNumber);
             p = new Process();
+            rb = new ReliableBroadcast();
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverSocket = new ServerSocket(0);
@@ -91,7 +93,7 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         //System.out.println(m);
         //System.out.println(this._ip + this._port + this._name);
 
-        p.Node(this._ip, this._port, this._name); //make the client a process node
+        //p.Node(this._ip, this._port, this._name); //make the client a process node
         
         this.sendMessage(m);
         //System.out.println("Message sent to the server : " + m);
@@ -187,13 +189,18 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         Scanner sc = new Scanner(System.in);
         while(true) {
             try {
+                //this.listen();
                 System.out.print("> ");
                 String command = sc.nextLine();
+                
                 if(command.equals("exit")) {
                     sc.close();
                     System.exit(1);
                 } else if(command.equals("get")) {
                     this.group = this.get();
+                } 
+                else if(command.equals("getp")) {
+                    this.getProcess();
                 } else if(command.contains("chat")) {
                     this.Chat(command);
                 } else if(command.equals("y")) {
@@ -204,7 +211,8 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
                     bw.write("Declined\n");
                     bw.flush();
                 } else {
-                    System.out.println("Command not found");
+                  //this.broadCast(command);
+                  System.out.println("Command not found"+command);
                 }
             } catch(Exception e) {
                 e.printStackTrace();
@@ -214,7 +222,16 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         }
     }
     
-    
+    @SuppressWarnings("resource")
+    private void broadCast(String s) throws IOException{
+      try{
+        System.out.println("\t\t\t This is the prcess list size = " + rb.p_group.size());
+      }
+      catch(NullPointerException e)
+      {
+        System.out.println("SHIT dint WORK");
+      }
+    }
     
     //chat from here
     @SuppressWarnings("resource")
@@ -223,6 +240,15 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
      Socket socket = new Socket(tok[1], Integer.parseInt(tok[2]));
      BufferedWriter bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
      
+     //String [] tok = s.split(" ");
+
+     //for(int i = 0; i < rb.p_group.size(); i++)
+    // {
+       //Process temp = new Process();
+       //temp = rb.p_group.get(i);
+       //socket = new Socket(temp.getIP(), temp.getPort());
+       //bbw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    // }
      //new thread to keep receiving message
      this.executor.execute(new Runnable() {
 
@@ -340,6 +366,21 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
         }
         return ret;
     }
+    
+    @SuppressWarnings("unchecked")
+    private ArrayList<Process> getProcess() {
+        ArrayList<Process> ret = null;
+        try {
+            String m = "getp\n";
+            this.sendMessage(m);
+            ObjectInputStream ois = new ObjectInputStream(this.s.getInputStream());
+            ret = (ArrayList<Process>) ois.readObject();
+            //System.out.println(ret.toString());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
      
     public static void main(String[] args) throws Exception {
         if(args.length!=1){
@@ -349,13 +390,13 @@ class ChatClient implements Runnable, BroadcastReceiver, Message{
  portNumber=Integer.parseInt(args[0]);
 
  ChatClient cc = new ChatClient();
-         
         while(true) {
             if(cc.register()) break;
         }
          
         cc.sendHeartbeat();
         cc.prompt();
+
         
         //ReliableBroadcast rb = new ReliableBroadcast(p); //start from here
         

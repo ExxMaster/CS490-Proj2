@@ -29,7 +29,7 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   }
   @Override 
    public void init(Process currentProcess , BroadcastReceiver br){
-    ;
+    
   }
   
   public void printGroup(){
@@ -40,11 +40,6 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
           String id = temp.getID();
           System.out.println("Process at \t\t\ti = "+ i + "\t\tis = " + id ); 
         }
-  }
-  
-  public ReliableBroadcast()
-  {
-     
   }
 }
 
