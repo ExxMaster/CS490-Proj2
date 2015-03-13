@@ -97,16 +97,15 @@ public class MultithreadedChatServer extends ReliableBroadcast implements Runnab
     
     private synchronized static boolean removeFromGroup(String s) {
       if(MultithreadedChatServer.group.remove(s)){
+        String [] sa = s.split(",");
+        sa[0] = sa[0].substring(1);
         for(int i = 0; i < rb.p_group.size(); i++)
         {
           Process temp = rb.p_group.get(i);
           String id = temp.getID();
-            System.out.println("\nthis is p group right now \t\t\t\t\t removing " + id +"\n");
-                        System.out.println("\nSTRING IS \t\t\t\t\t removing " + s +"\n");
-          if(id.equals(s)){
-            System.out.println("in the if \t\t\t\t\t removing " + id);
+          if(id.equals(sa[0])){
             if(rb.p_group.remove(temp)){
-              System.out.println("\t\t\t\t\tDONE REMOVING FROM PROCESS");
+              System.out.println("\t\t\tDONE REMOVING FROM PROCESS LIST");
             }
             else
             {
