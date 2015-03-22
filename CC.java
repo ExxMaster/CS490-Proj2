@@ -29,7 +29,7 @@ class CC implements Runnable, BroadcastReceiver{
     
     //constant variable
     private static final int heartbeat_rate = 5;
-    private static final String serverAddress = "localhost";
+    private static final String serverAddress = "data.cs.purdue.edu";
     private static int portNumber = 1222;      //this gets reset to what the user inputs
     private static final int THREAD_POOL_CAPACITY = 10;
 	

@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class FF implements Runnable, BroadcastReceiver{
+class ST implements Runnable, BroadcastReceiver{
 	 
 	private String _name, _ip;
     private int _port;
@@ -38,7 +38,7 @@ class FF implements Runnable, BroadcastReceiver{
     ;
   }
 	
-	public FF() {
+	public ST() {
 	
 	
         try{
@@ -130,8 +130,12 @@ class FF implements Runnable, BroadcastReceiver{
 		Scanner sc = new Scanner(System.in);
 		while(true) {
 		    try {
+		        if(msgnum==10000){
+		        	System.exit(0);
+		        }
 		        //System.out.print("> ");
-		        String command = sc.nextLine();
+		        //String command = sc.nextLine();
+		        String command = msgnum.toString();//sc.nextLine();	        
 		        //System.out.println("Command: "+command);
 		        this.p_client_group = this.getProcess();
 		         for(int i = 0; i<this.p_client_group.size(); i++){
@@ -156,27 +160,7 @@ class FF implements Runnable, BroadcastReceiver{
 		            sc.close();
 		            System.exit(1);
 		        } 
-		        
-		        while(true){
-		        	int h = 0;
-		        	for(int i=0; i<this.messages.size();i++){
-			        	String check = this.messages.get(i);
-			        	String f = check.substring(0,check.indexOf(' ')-1);
-			        	String b = check.substring(check.indexOf('#')+1, check.length());
-			        	//System.out.println("f: ("+f+"), b: ("+b+")");
-			        	int num = Integer.parseInt(b);
-			        	if(f.equals(this._name) && num == msgnum){
-			        		h=1;
-			        		break;
-			        	}
-			        }
-			        if(h==1){
-			        	break;
-			        }
-		        }
-		        
 		        msgnum++;
-		        
 			} catch(Exception e) {
                 //e.printStackTrace();
                 System.exit(1);
@@ -230,7 +214,7 @@ class FF implements Runnable, BroadcastReceiver{
 	//send heart beat every heartbeat_rate seconds
 	public void sendHeartbeat() {
 		this.executor.execute(new Runnable() {
-			FF c;
+			ST c;
 			@Override
 			public void run() {
 				try {
@@ -245,7 +229,7 @@ class FF implements Runnable, BroadcastReceiver{
 				}
 			}
 
-			public Runnable init(FF cc) {
+			public Runnable init(ST cc) {
 				this.c = cc;
 				return this;
 			}
@@ -305,13 +289,14 @@ class FF implements Runnable, BroadcastReceiver{
     }
 	
 	public static void main(String[] args) throws Exception {
+
 		if(args.length!=1){
 			System.out.println("Need port number");
 			System.exit(1);
 		}
 		portNumber=Integer.parseInt(args[0]);
 
-		FF cc = new FF();
+		ST cc = new ST();
 		while(true) {
 			if(cc.register()) break;
 		} 
