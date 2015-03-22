@@ -143,16 +143,14 @@ class CC implements Runnable, BroadcastReceiver{
 					  String send = id.concat(" ").concat(ip).concat(" ").concat(Integer.toString(port));
 					  //System.out.println("send: "+send);
 					  if(id.equals(this._name)){
-					  		//System.out.println("mycommand: "+command); SEND MSG TO SELF!!!!!!!!!!!!!!!!!!!!!!
 					  		continue;
 					  }
 					  
 					  Socket socket = new Socket(ip, port);
 					  BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-					  String msg = this._name+": "+command+","+msgnum+"\n";
+					  String msg = this._name+": "+command+"#"+msgnum+"\n";
 					  bw.write(msg);
 					  bw.flush();
-					  
 					  socket.close();
 				}
 		        if(command.equals("exit")) {
@@ -275,7 +273,7 @@ class CC implements Runnable, BroadcastReceiver{
 				}
 	        	
 	        	String fin = new String();
-	        	fin = msg.substring(0,msg.indexOf(','));
+	        	fin = msg.substring(0,msg.indexOf('#'));
 	        	System.out.println(fin);
 	        	this._client.close();
 
