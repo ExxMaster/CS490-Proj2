@@ -88,24 +88,6 @@ class ChatClient implements Runnable, BroadcastReceiver{
         return(m.equals("Success"));
     }
     
-     @SuppressWarnings("resource")
- public boolean autoRegister(String s) {
-        //get the name
-        //Scanner sc = new Scanner(System.in);
-        System.out.print(s);
-        this._name = s;
-         
-        String m = "register<" + this._name + ", " + this._ip + ", " +  this._port + ">" + "\n";
-        //System.out.println(m);
-         
-        this.sendMessage(m);
-        //System.out.println("Message sent to the server : " + m);
-         
-        m = this.readMessage();
-        //System.out.println(m);
-        //System.out.print(m);
-        return(m.equals("Success"));
-    }
      
     //send heart beat every heartbeat_rate seconds
     public void sendHeartbeat() {
@@ -196,7 +178,7 @@ class ChatClient implements Runnable, BroadcastReceiver{
                     bw.write("Declined\n");
                     bw.flush();
                 } 
-                
+					
                 else {
                   System.out.println("Calling BroadCast");
                   this.p_client_group = this.getProcess();
@@ -261,10 +243,13 @@ class ChatClient implements Runnable, BroadcastReceiver{
       if(s.equals("EndSession")) {
        System.out.println("Chat Closed");
        System.out.print("> ");
+	   this.s.close();
        return;
       }
       System.out.println(s);
       System.out.print(">> ");
+      //this.s.close();
+      //return;
      }
     } catch (IOException e) {
      e.printStackTrace();
