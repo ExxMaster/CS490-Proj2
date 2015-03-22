@@ -135,7 +135,7 @@ class ST implements Runnable, BroadcastReceiver{
 		        }
 		        //System.out.print("> ");
 		        //String command = sc.nextLine();
-		        String command = msgnum.toString();//sc.nextLine();	        
+		        String command = Integer.toString(msgnum);//sc.nextLine();	        
 		        //System.out.println("Command: "+command);
 		        this.p_client_group = this.getProcess();
 		         for(int i = 0; i<this.p_client_group.size(); i++){
