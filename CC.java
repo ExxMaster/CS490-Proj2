@@ -274,8 +274,9 @@ class CC implements Runnable, BroadcastReceiver{
 					  socket.close();
 				}
 	        	
-	        	
-	        	System.out.println("msg: "+msg);
+	        	String fin = new String();
+	        	fin = msg.substring(0,msg.indexOf(','));
+	        	System.out.println(fin);
 	        	this._client.close();
 
     	    } catch(Exception e) {
