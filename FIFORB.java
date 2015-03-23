@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ST implements Runnable, BroadcastReceiver{
+class FIFORB implements Runnable, BroadcastReceiver{
 	 
 	private String _name, _ip;
     private int _port;
@@ -31,14 +31,14 @@ class ST implements Runnable, BroadcastReceiver{
     private static final int heartbeat_rate = 5;
     private static final String serverAddress = "data.cs.purdue.edu";
     private static int portNumber = 1222;      //this gets reset to what the user inputs
-    private static final int THREAD_POOL_CAPACITY = 10;
+    private static final int THREAD_POOL_CAPACITY = 11;
 	
 	@Override
   public void receive(Message m){
     ;
   }
 	
-	public ST() {
+	public FIFORB() {
 	
 	
         try{
@@ -47,7 +47,7 @@ class ST implements Runnable, BroadcastReceiver{
             rb = new ReliableBroadcast();
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            serverSocket = new ServerSocket(portNumber);
+            serverSocket = new ServerSocket(0);
             messages = new ArrayList<String>();
         }catch (IOException e) {
             System.out.println("Connextion to server failed");
@@ -120,7 +120,7 @@ class ST implements Runnable, BroadcastReceiver{
             ret = (ArrayList<Process>) ois.readObject();
             //System.out.println(ret.toString());
         } catch(Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return ret;
     }
@@ -130,13 +130,8 @@ class ST implements Runnable, BroadcastReceiver{
 		Scanner sc = new Scanner(System.in);
 		while(true) {
 		    try {
-		        if(msgnum>10000){
-		        	System.exit(0);
-		        }
 		        //System.out.print("> ");
-		        //String command = sc.nextLine();
-		        String command = Integer.toString(msgnum);
-		        Thread.sleep(1000);
+		        String command = sc.nextLine();
 		        //System.out.println("Command: "+command);
 		        this.p_client_group = this.getProcess();
 		         for(int i = 0; i<this.p_client_group.size(); i++){
@@ -155,16 +150,36 @@ class ST implements Runnable, BroadcastReceiver{
 					  String msg = this._name+": "+command+"#"+msgnum+"\n";
 					  bw.write(msg);
 					  bw.flush();
-					  //socket.close();
+					  socket.close();
 				}
 		        if(command.equals("exit")) {
 		            sc.close();
 		            System.exit(1);
 		        } 
+		        
+		        while(true){
+		        	int h = 0;
+		        	for(int i=0; i<this.messages.size();i++){
+			        	String check = this.messages.get(i);
+			        	String f = check.substring(0,check.indexOf(' ')-1);
+			        	String b = check.substring(check.indexOf('#')+1, check.length());
+			        	//System.out.println("f: ("+f+"), b: ("+b+")");
+			        	int num = Integer.parseInt(b);
+			        	if(f.equals(this._name) && num == msgnum){
+			        		h=1;
+			        		break;
+			        	}
+			        }
+			        if(h==1){
+			        	break;
+			        }
+		        }
+		        
 		        msgnum++;
+		        
 			} catch(Exception e) {
                 //e.printStackTrace();
-                //System.exit(1);
+                System.exit(1);
                  
             }
 		}
@@ -215,7 +230,7 @@ class ST implements Runnable, BroadcastReceiver{
 	//send heart beat every heartbeat_rate seconds
 	public void sendHeartbeat() {
 		this.executor.execute(new Runnable() {
-			ST c;
+			FIFORB c;
 			@Override
 			public void run() {
 				try {
@@ -226,11 +241,11 @@ class ST implements Runnable, BroadcastReceiver{
 						Thread.sleep(heartbeat_rate * 1000);
 					}
 				} catch (Exception e) {
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 
-			public Runnable init(ST cc) {
+			public Runnable init(FIFORB cc) {
 				this.c = cc;
 				return this;
 			}
@@ -290,14 +305,13 @@ class ST implements Runnable, BroadcastReceiver{
     }
 	
 	public static void main(String[] args) throws Exception {
-
 		if(args.length!=1){
 			System.out.println("Need port number");
 			System.exit(1);
 		}
 		portNumber=Integer.parseInt(args[0]);
 
-		ST cc = new ST();
+		FIFORB cc = new FIFORB();
 		while(true) {
 			if(cc.register()) break;
 		} 

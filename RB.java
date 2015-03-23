@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class CC implements Runnable, BroadcastReceiver{
+class RB implements Runnable, BroadcastReceiver{
 	 
 	private String _name, _ip;
     private int _port;
@@ -31,14 +31,14 @@ class CC implements Runnable, BroadcastReceiver{
     private static final int heartbeat_rate = 5;
     private static final String serverAddress = "data.cs.purdue.edu";
     private static int portNumber = 1222;      //this gets reset to what the user inputs
-    private static final int THREAD_POOL_CAPACITY = 10;
+    private static final int THREAD_POOL_CAPACITY = 11;
 	
 	@Override
   public void receive(Message m){
     ;
   }
 	
-	public CC() {
+	public RB() {
 	
 	
         try{
@@ -50,7 +50,7 @@ class CC implements Runnable, BroadcastReceiver{
             serverSocket = new ServerSocket(0);
             messages = new ArrayList<String>();
         }catch (IOException e) {
-            System.out.println("Connextion to server failed");
+            System.out.println("Connection to server failed");
             System.exit(1);
         }
         this.executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(THREAD_POOL_CAPACITY);
@@ -120,7 +120,7 @@ class CC implements Runnable, BroadcastReceiver{
             ret = (ArrayList<Process>) ois.readObject();
             //System.out.println(ret.toString());
         } catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return ret;
     }
@@ -211,7 +211,7 @@ class CC implements Runnable, BroadcastReceiver{
 	//send heart beat every heartbeat_rate seconds
 	public void sendHeartbeat() {
 		this.executor.execute(new Runnable() {
-			CC c;
+			RB c;
 			@Override
 			public void run() {
 				try {
@@ -222,11 +222,11 @@ class CC implements Runnable, BroadcastReceiver{
 						Thread.sleep(heartbeat_rate * 1000);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 
-			public Runnable init(CC cc) {
+			public Runnable init(RB cc) {
 				this.c = cc;
 				return this;
 			}
@@ -293,7 +293,7 @@ class CC implements Runnable, BroadcastReceiver{
 		}
 		portNumber=Integer.parseInt(args[0]);
 
-		CC cc = new CC();
+		RB cc = new RB();
 		while(true) {
 			if(cc.register()) break;
 		} 

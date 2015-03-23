@@ -51,12 +51,12 @@ public class ReliableBroadcast implements ReliableBroadcastInterface{
   }
   
   public void printGroup(){
-    System.out.println("Number of processes \t\t" + p_group.size()); 
+    System.out.println("Number of clients \t\t" + p_group.size()); 
     for(int i = 0; i < ReliableBroadcast.p_group.size(); i++)
         {
           Process temp = ReliableBroadcast.p_group.get(i);
           String id = temp.getID();
-          System.out.println("Process at \t\t\ti = "+ i + "\t\tis = " + id ); 
+          System.out.println("Client at \t\t\ti = "+ i + "\t\tid = " + id ); 
         }
   }
 }

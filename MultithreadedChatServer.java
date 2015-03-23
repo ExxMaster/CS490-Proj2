@@ -16,7 +16,7 @@ public class MultithreadedChatServer extends ReliableBroadcast implements Runnab
     
     //Constant Variable
     private static int PORT = 1222;
-    private static final int THREAD_POOL_CAPACITY = 10;
+    private static final int THREAD_POOL_CAPACITY = 11;
     public static ReliableBroadcast rb;
     
     private ServerSocket serverSocket;
@@ -170,7 +170,7 @@ public class MultithreadedChatServer extends ReliableBroadcast implements Runnab
                 } else if(m.equals("getp")){
                   ObjectOutputStream oos = new ObjectOutputStream(this._client.getOutputStream());
                   oos.writeObject(MultithreadedChatServer.rb.p_group);
-                  System.out.println(MultithreadedChatServer.rb.p_group.toString());
+                  //System.out.println(MultithreadedChatServer.rb.p_group.toString());
                   oos.flush();
                 }           
                 else if(m.contains("heartbeat")) {

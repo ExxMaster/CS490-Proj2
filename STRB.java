@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class ST implements Runnable, BroadcastReceiver{
+class STRB implements Runnable, BroadcastReceiver{
 	 
 	private String _name, _ip;
     private int _port;
@@ -31,14 +31,14 @@ class ST implements Runnable, BroadcastReceiver{
     private static final int heartbeat_rate = 5;
     private static final String serverAddress = "data.cs.purdue.edu";
     private static int portNumber = 1222;      //this gets reset to what the user inputs
-    private static final int THREAD_POOL_CAPACITY = 10;
+    private static final int THREAD_POOL_CAPACITY = 11;
 	
 	@Override
   public void receive(Message m){
     ;
   }
 	
-	public ST() {
+	public STRB() {
 	
 	
         try{
@@ -47,7 +47,7 @@ class ST implements Runnable, BroadcastReceiver{
             rb = new ReliableBroadcast();
             bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            serverSocket = new ServerSocket(portNumber);
+            serverSocket = new ServerSocket(0);
             messages = new ArrayList<String>();
         }catch (IOException e) {
             System.out.println("Connextion to server failed");
@@ -136,7 +136,7 @@ class ST implements Runnable, BroadcastReceiver{
 		        //System.out.print("> ");
 		        //String command = sc.nextLine();
 		        String command = Integer.toString(msgnum);
-		        Thread.sleep(1000);
+		        Thread.sleep(200);
 		        //System.out.println("Command: "+command);
 		        this.p_client_group = this.getProcess();
 		         for(int i = 0; i<this.p_client_group.size(); i++){
@@ -215,7 +215,7 @@ class ST implements Runnable, BroadcastReceiver{
 	//send heart beat every heartbeat_rate seconds
 	public void sendHeartbeat() {
 		this.executor.execute(new Runnable() {
-			ST c;
+			STRB c;
 			@Override
 			public void run() {
 				try {
@@ -230,7 +230,7 @@ class ST implements Runnable, BroadcastReceiver{
 				}
 			}
 
-			public Runnable init(ST cc) {
+			public Runnable init(STRB cc) {
 				this.c = cc;
 				return this;
 			}
@@ -297,7 +297,7 @@ class ST implements Runnable, BroadcastReceiver{
 		}
 		portNumber=Integer.parseInt(args[0]);
 
-		ST cc = new ST();
+		STRB cc = new STRB();
 		while(true) {
 			if(cc.register()) break;
 		} 

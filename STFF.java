@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
  
-class FF implements Runnable, BroadcastReceiver{
+class STFF implements Runnable, BroadcastReceiver{
 	 
 	private String _name, _ip;
     private int _port;
@@ -31,14 +31,14 @@ class FF implements Runnable, BroadcastReceiver{
     private static final int heartbeat_rate = 5;
     private static final String serverAddress = "data.cs.purdue.edu";
     private static int portNumber = 1222;      //this gets reset to what the user inputs
-    private static final int THREAD_POOL_CAPACITY = 10;
+    private static final int THREAD_POOL_CAPACITY = 11;
 	
 	@Override
   public void receive(Message m){
     ;
   }
 	
-	public FF() {
+	public STFF() {
 	
 	
         try{
@@ -130,8 +130,14 @@ class FF implements Runnable, BroadcastReceiver{
 		Scanner sc = new Scanner(System.in);
 		while(true) {
 		    try {
+		    
+		    	if(msgnum>10000){
+		        	System.exit(0);
+		        }
 		        //System.out.print("> ");
-		        String command = sc.nextLine();
+		        //String command = sc.nextLine();
+		        String command = Integer.toString(msgnum);
+		        Thread.sleep(1000);
 		        //System.out.println("Command: "+command);
 		        this.p_client_group = this.getProcess();
 		         for(int i = 0; i<this.p_client_group.size(); i++){
@@ -230,7 +236,7 @@ class FF implements Runnable, BroadcastReceiver{
 	//send heart beat every heartbeat_rate seconds
 	public void sendHeartbeat() {
 		this.executor.execute(new Runnable() {
-			FF c;
+			STFF c;
 			@Override
 			public void run() {
 				try {
@@ -245,7 +251,7 @@ class FF implements Runnable, BroadcastReceiver{
 				}
 			}
 
-			public Runnable init(FF cc) {
+			public Runnable init(STFF cc) {
 				this.c = cc;
 				return this;
 			}
@@ -311,7 +317,7 @@ class FF implements Runnable, BroadcastReceiver{
 		}
 		portNumber=Integer.parseInt(args[0]);
 
-		FF cc = new FF();
+		STFF cc = new STFF();
 		while(true) {
 			if(cc.register()) break;
 		} 
