@@ -27,3 +27,6 @@ STRB:
 STFF:
 	java STFF 1234
 	
+clean:
+	rm *.class
+	rm *.java~
